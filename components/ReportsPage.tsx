@@ -4,7 +4,6 @@ import Header from './Header';
 import SummaryReportList from './SummaryReportList';
 import ReportFilters from './ReportFilters';
 import SummaryReportModal from './SummaryReportModal';
-import { generateSummaryReport } from '../services/aiService';
 import type { Report, SummaryReport, Officer } from '../types';
 import { SparklesIcon, DownloadIcon } from './IconComponents';
 import { mockSummaryReports } from '../data/mockSummaryReports';
@@ -107,8 +106,8 @@ const ReportsPage: React.FC = () => {
         }
 
         try {
-            const aiResponse = await generateSummaryReport(filteredReports, filters);
-            setModalContent(aiResponse);
+//          const aiResponse = await generateSummaryReport(filteredReports, filters);
+//         setModalContent(aiResponse);
 
             const newSummaryReport: SummaryReport = {
                 id: `SUM-${Date.now()}`,
