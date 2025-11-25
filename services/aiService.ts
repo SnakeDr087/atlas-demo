@@ -1,8 +1,6 @@
-import { GoogleGenAI, Type } from "@google/genai";
 import type { Report, User, TranscriptSegment } from '../types';
 
 // Ensure the API key is being accessed correctly from environment variables
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY! });
 // Helper to convert file to a base64 string for the API
 const fileToGenerativePart = async (file: File) => {
     const base64EncodedDataPromise = new Promise<string>((resolve) => {
@@ -24,13 +22,13 @@ interface GetChatbotResponseProps {
 }
 
 export const getChatbotResponse = async ({
-    user,
-    message,
-    systemInstruction,
-    policyGuidelines,
+  user,
+  message,
+  systemInstruction,
+  policyGuidelines,
 }: GetChatbotResponseProps): Promise<string> => {
-    try {
-        const fullPrompt = `
+  try {
+    const fullPrompt = `
 CONTEXT:
 - User Role: ${user.role}
 - User Agency: ${user.agency || 'N/A'}
@@ -43,37 +41,33 @@ USER QUERY:
 ${message}
 `;
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: fullPrompt,
-            config: {
-                systemInstruction: systemInstruction,
-            },
-        });
-        
-        return response.text || "I couldn't generate a response.";
-    } catch (error) {
-        console.error("Error getting chatbot response:", error);
-        return "Sorry, I encountered an error while processing your request.";
+    // Call your serverless function instead of Gemini directly
+    const response = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: fullPrompt
+          }]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to get response');
     }
+
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error('Error getting chatbot response:', error);
+    throw error;
+  }
 };
-
-
-export const generateSummaryReport = async (reports: Report[], filters: any): Promise<string> => {
-     try {
-        const reportsJson = JSON.stringify(reports.slice(0, 50), null, 2); // Limit context size
-        const filtersJson = JSON.stringify(filters, null, 2);
-
-        const prompt = `
-Generate a summary report based on the following JSON data of incident reports and filters.
-
-**Instructions:**
-1.  Analyze the provided JSON data which contains an array of incident reports.
-2.  Use the provided filters to understand the scope of the user's query.
-3.  Structure your response using the following markdown sections exactly: \`[FILTER_CRITERIA]\`, \`[EXECUTIVE_SUMMARY]\`, \`[REPORT_OVERVIEW]\`, \`[INCIDENT_ANALYSIS]\`, \`[OFFICER_ANALYSIS]\`, and \`[KEY_FINDINGS]\`.
-4.  For \`[FILTER_CRITERIA]\`, list the filters that were applied.
-5.  For \`[EXECUTIVE_SUMMARY]\`, provide a brief, high-level overview of the key trends and findings.
-6.  For \`[REPORT_OVERVIEW]\`, state the total number of reports analyzed.
 7.  For \`[INCIDENT_ANALYSIS]\`, provide a breakdown of reports by 'outcome', 'incidentType', and 'shift' using markdown bullet points.
 8.  For \`[OFFICER_ANALYSIS]\`, list the officers involved and the number of reports for each.
 9.  For \`[KEY_FINDINGS]\`, synthesize the most important insights from the data in 2-3 sentences.
