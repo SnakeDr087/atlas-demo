@@ -1,0 +1,5 @@
+{
+  "name": "ATLAS Client Demo",
+  "description": "A web-based software for law enforcement supervisors to review body-worn camera (BWC) video footage, assess officer performance, and manage incidents using AI-powered insights.",
+  "requestFramePermissions": []
+}
