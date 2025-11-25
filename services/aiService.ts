@@ -68,15 +68,7 @@ ${message}
     throw error;
   }
 };
-7.  For \`[INCIDENT_ANALYSIS]\`, provide a breakdown of reports by 'outcome', 'incidentType', and 'shift' using markdown bullet points.
-8.  For \`[OFFICER_ANALYSIS]\`, list the officers involved and the number of reports for each.
-9.  For \`[KEY_FINDINGS]\`, synthesize the most important insights from the data in 2-3 sentences.
-10. Ensure the entire output is a single, continuous block of text formatted in markdown. Do not use JSON.
 
-**Filters Used:**
-\`\`\`json
-${filtersJson}
-\`\`\`
 
 **Incident Reports Data:**
 \`\`\`json
