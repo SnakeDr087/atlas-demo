@@ -2,8 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type { Report, User, TranscriptSegment } from '../types';
 
 // Ensure the API key is being accessed correctly from environment variables
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
-
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY! });
 // Helper to convert file to a base64 string for the API
 const fileToGenerativePart = async (file: File) => {
     const base64EncodedDataPromise = new Promise<string>((resolve) => {
